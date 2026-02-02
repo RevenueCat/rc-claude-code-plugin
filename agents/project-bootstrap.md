@@ -113,7 +113,7 @@ Offering: default (current)
 Next Steps:
 1. Configure store credentials in RevenueCat dashboard
 2. Create products in App Store Connect / Play Console
-3. Add SDK to your app (see /revenuecat:rc-app)
+3. Add SDK to your app (see /rc:create-app)
 4. Implement paywall UI using the "default" offering
 ```
 
