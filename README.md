@@ -55,15 +55,6 @@ Diagnose and fix common integration issues. Systematically checks your configura
 - "Debug my RevenueCat setup"
 - "Users aren't getting premium access"
 
-### Paywall Builder Agent
-
-Create and configure offerings, packages, and paywalls for optimal conversion.
-
-**Trigger phrases:**
-- "Create a paywall for my app"
-- "Set up subscription offerings"
-- "I want to A/B test pricing"
-
 ## Example Workflows
 
 ### New App Setup
