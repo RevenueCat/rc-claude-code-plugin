@@ -224,23 +224,23 @@ When developers share debug logs, look for these emoji indicators:
 ### iOS Known Issues
 
 #### iOS 18.0-18.3.2: StoreKit Daemon Connection Failure
-- **Symptom:** Purchases fail with `STORE_PROBLEM` error on physical devices
-- **Cause:** StoreKit daemon connection issue in these iOS versions
-- **Fix:** User should upgrade to iOS 18.4 or later
+- **Symptom:** Purchases fail with `STORE_PROBLEM` error (NSCocoaErrorDomain Code 4097)
+- **Cause:** StoreKit daemon connection issue affecting ~25% of purchase attempts
+- **Affected:** Physical devices only
+- **Fix:** User should upgrade to iOS 18.4 or later (Apple fixed in iOS 18.4)
 - **Note:** This does NOT affect App Store review (reviewers use current iOS)
 
 #### iOS 18.2-18.2.1: Purchase Sheet May Fail to Appear
 - **Symptom:** Purchase sheet doesn't show when calling `purchase()`
-- **Fix:** User should upgrade to iOS 18.3+
+- **Cause:** Apple bug when current scene's key window root view controller not in view hierarchy
+- **Fix:** User should upgrade to iOS 18.3+ (Apple fixed in iOS 18.3)
 
-#### iOS 18.3.1-18.5: Canceled State After Successful Purchase
-- **Symptom:** Purchase succeeds but SDK reports canceled state
-- **Fix:** Handled in SDK 4.x+, ensure SDK is updated
-
-#### iOS Simulator (Xcode 16.x/iOS 18.4+): Products Don't Load
-- **Symptom:** Products return empty in simulator
-- **Cause:** iOS 18.4+ simulator bug
-- **Fix:** Test on physical device or use StoreKit Configuration file
+#### iOS 18.4-18.5 Simulator: Products Don't Load
+- **Symptom:** Products return empty in simulator environment with sandbox
+- **Cause:** StoreKit 2 bug in iOS 18.4+ simulators (Apple FB17105187)
+- **Affected:** Simulator only - physical devices work fine, production unaffected
+- **Fix:** Test on physical device, use StoreKit Configuration file, or use Xcode 26+ with iOS 26+ simulators (Apple fixed in iOS 26)
+- **Note:** This will NOT cause app rejections (simulator-only issue)
 
 ### Android Known Issues
 
