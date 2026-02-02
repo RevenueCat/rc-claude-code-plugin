@@ -122,28 +122,9 @@ Claude: I'll diagnose this. Let me check your configuration...
 
 ## MCP Tools Reference
 
-This plugin uses the RevenueCat MCP server which provides these tools:
+This plugin uses the RevenueCat MCP server which provides tools for common configuration actions.
 
-| Tool | Description |
-|------|-------------|
-| `mcp_RC_get_project` | Get project details |
-| `mcp_RC_create_project` | Create a new project |
-| `mcp_RC_list_apps` | List all apps |
-| `mcp_RC_create_app` | Create an app |
-| `mcp_RC_list_products` | List all products |
-| `mcp_RC_create_product` | Create a product |
-| `mcp_RC_list_entitlements` | List entitlements |
-| `mcp_RC_create_entitlement` | Create an entitlement |
-| `mcp_RC_attach_products_to_entitlement` | Attach products to entitlement |
-| `mcp_RC_list_offerings` | List offerings |
-| `mcp_RC_create_offering` | Create an offering |
-| `mcp_RC_list_packages` | List packages in an offering |
-| `mcp_RC_create_package` | Create a package |
-| `mcp_RC_attach_products_to_package` | Attach products to package |
-| `mcp_RC_create_webhook_integration` | Create webhook |
-| `mcp_RC_list_public_api_keys` | Get public API keys |
-
-See the [full API documentation](https://www.revenuecat.com/docs/api-v2) for details.
+See the [full MCP tools reference](https://www.revenuecat.com/docs/tools/mcp/tools-reference) for complete details on all available tools.
 
 ## Support
 
