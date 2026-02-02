@@ -2,7 +2,6 @@
 
 ### Checklist
 - [ ] If applicable, unit tests
-- [ ] If applicable, create follow-up issues for native and hybrids
 
 ### Motivation
 <!-- Why is this change required? What problem does it solve? -->
