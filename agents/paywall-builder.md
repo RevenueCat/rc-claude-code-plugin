@@ -5,6 +5,7 @@ A specialized agent for creating paywalls with design system integration from th
 ## Purpose
 
 Help developers create styled paywalls that match their app's design system. This agent handles:
+- Preflight validation for required MCP tooling
 - Extracting Design Direction JSON from the user's app
 - Selecting the target project/offering
 - Optionally duplicating offerings for safe experimentation
@@ -19,16 +20,24 @@ Invoke this agent when:
 
 ## Agent Behavior
 
+### Phase 0: Preflight
+
+Before any resource creation, validate required MCP tools are available.
+
+1. Verify the runtime has `mcp_RC_create_design_system_paywall_generation_job`.
+2. If missing, stop immediately and explain that design-system paywall generation is not available in this MCP deployment.
+3. Do not create or duplicate offerings/packages when the generation job tool is unavailable.
+
 ### Phase 1: Prepare Design System Input
 
-1. Check if `/DesignSystemPack/design_direction.json` already exists in the user's codebase
+1. Check if `DesignSystemPack/design_direction.json` already exists in the user's workspace
 2. If found, ask the user:
    - "Found an existing design system. Would you like to use it or extract fresh?"
    - Options: "Use existing" / "Extract fresh"
 3. If extracting fresh OR no existing file:
    - Invoke the **design-system-extractor** agent on the user's codebase
    - Parse the extractor output JSON and keep it as the `design_system` payload
-4. If the user wants persistence, optionally write the extracted JSON to `/DesignSystemPack/design_direction.json`
+4. If the user wants persistence, optionally write the extracted JSON to `DesignSystemPack/design_direction.json`
 5. Use the resolved Design Direction JSON for paywall generation
 
 ### Phase 2: Select Offering
@@ -55,9 +64,10 @@ Ask the user how to proceed before creating new resources:
 
 1. **Preferred (safer): Create a duplicated offering**
    - Explain this is recommended because design-system paywall generation cannot update an existing paywall on an offering that already has one.
+   - Generate a timestamp suffix once for this run: `YYYYMMDD_HHmmss`.
    - Call `mcp_RC_create_offering` with:
-     - `lookup_key`: `{original_lookup_key}_styled` or user-provided custom name
-     - `display_name`: `{original_display_name} (Styled)` or user-provided custom name
+     - `lookup_key`: `{original_lookup_key}_styled_{YYYYMMDD_HHmmss}` by default, or `{user_lookup_key}_{YYYYMMDD_HHmmss}` when user provides one
+     - `display_name`: `{original_display_name} (Styled {YYYY-MM-DD HH:mm:ss})` by default, or `{user_display_name} ({YYYY-MM-DD HH:mm:ss})` when user provides one
      - `metadata`: copy from original offering if available
 
 2. **Duplicate packages with product associations**
@@ -139,94 +149,11 @@ Notes:
 
 ## Design Direction Schema
 
-The `design_system` parameter passed to `mcp_RC_create_design_system_paywall_generation_job` follows the Design Direction schema:
+Use the canonical schema in `agents/design-direction-schema.json`.
 
-```json
-{
-  "app_context": {
-    "app_name": "string",
-    "app_store_url": "string",
-    "developer_name": "string",
-    "category": "string",
-    "one_line_description": "string"
-  },
-  "brand_identity": {
-    "brand_mission": "string",
-    "brand_personality_archetype": "string",
-    "core_values": ["string"]
-  },
-  "target_audience": {
-    "primary_user_persona": "string",
-    "user_needs_and_goals": ["string"],
-    "user_pain_points": ["string"]
-  },
-  "problem_solution_fit": {
-    "problem_statement": "string",
-    "solution_statement": "string",
-    "unique_selling_propositions": ["string"]
-  },
-  "tone_of_voice": {
-    "primary_tone": "string",
-    "secondary_tone": "string",
-    "keywords_and_phrases": ["string"],
-    "communication_style_summary": "string"
-  },
-  "visual_language": {
-    "color_palette": {
-      "primary_brand_color": "#HEX",
-      "secondary_brand_color": "#HEX",
-      "accent_cta_color": "#HEX",
-      "illustration_palette": ["#HEX"],
-      "background_colors": ["#HEX"],
-      "palette_mood": "string"
-    },
-    "typography": {
-      "headline_font_family": "string",
-      "body_font_family": "string",
-      "typographic_style": "string"
-    },
-    "illustration_and_imagery_style": {
-      "primary_style": "string",
-      "iconography_style": "string",
-      "mascot_description": "string"
-    },
-    "default_image_style": {
-      "recraft_style": "digital_illustration | vector_illustration | realistic_image | icon",
-      "recraft_substyle": "string (omit when not applicable)"
-    }
-  },
-  "visual_asset_strategy": {
-    "extraction_confidence": "high | medium | low | none",
-    "primary_asset_type": "illustration | photography | abstract | ui_focused | mixed",
-    "extraction_source": "string",
-    "recommended_approach": {
-      "for_paywall_images": "string",
-      "style_rationale": "string",
-      "alternative_approach": "string"
-    },
-    "category_inference": {
-      "category_typical_imagery": "string",
-      "audience_expectations": "string",
-      "recommended_recraft_style": "digital_illustration | vector_illustration | realistic_image | icon",
-      "recommended_recraft_substyle": "string (omit when not applicable)"
-    }
-  },
-  "ui_patterns": {
-    "button_style": "string",
-    "card_style": "string",
-    "overall_layout_philosophy": "string"
-  },
-  "content_strategy": {
-    "key_content_themes": ["string"],
-    "premium_feature_highlights": ["string"]
-  },
-  "transparency_suitability": {
-    "suitable_for_transparent_bg": true,
-    "confidence": "high | medium | low | none",
-    "reasoning": "string"
-  }
-}
-```
+Rules:
+- Keep key names and nesting exactly as defined in `agents/design-direction-schema.json`.
+- Optional style substyle fields should be omitted when not applicable (never use `null`).
 
 ## Package Identifier Reference
 
@@ -256,7 +183,7 @@ When duplicating packages with products:
 2. **Eligibility criteria for Android:**
    - `all` - Show to all Android users
    - `google_sdk_lt_6` - Only for older Billing Library
-   - `google_sdk_ge_6` - Only for Billing Library 5+
+   - `google_sdk_ge_6` - Only for Billing Library 6+
 
 Example package structure:
 ```
