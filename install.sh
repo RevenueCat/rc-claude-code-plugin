@@ -38,6 +38,11 @@ if [ -d "${PLUGIN_PATH}/.git" ]; then
   info "Plugin already installed — updating..."
   git -C "${PLUGIN_PATH}" pull --ff-only --quiet
   success "Plugin updated at ${PLUGIN_PATH}"
+elif [ -e "${PLUGIN_PATH}" ]; then
+  warn "Found existing plugin path without git metadata; replacing with a fresh clone..."
+  rm -rf "${PLUGIN_PATH}"
+  git clone --depth=1 --quiet "${REPO_URL}" "${PLUGIN_PATH}"
+  success "Plugin reinstalled at ${PLUGIN_PATH}"
 else
   info "Cloning plugin into ${PLUGIN_PATH}..."
   git clone --depth=1 --quiet "${REPO_URL}" "${PLUGIN_PATH}"
@@ -55,12 +60,17 @@ fi
 
 # Use node if available, otherwise fall back to python3
 if command -v node >/dev/null 2>&1; then
-  PATCH_RESULT=$(node - "${SETTINGS_FILE}" "${PLUGIN_PATH}" <<'EOF'
+  if ! PATCH_RESULT=$(node - "${SETTINGS_FILE}" "${PLUGIN_PATH}" <<'EOF'
 const fs   = require('fs');
 const file = process.argv[2];
 const path = process.argv[3];
 let settings;
-try { settings = JSON.parse(fs.readFileSync(file, 'utf8')); } catch(e) { settings = {}; }
+try {
+  settings = JSON.parse(fs.readFileSync(file, 'utf8'));
+} catch (e) {
+  console.error('Invalid JSON in settings file');
+  process.exit(2);
+}
 if (!Array.isArray(settings.plugins)) settings.plugins = [];
 if (settings.plugins.includes(path)) {
   process.stdout.write('already_present\n');
@@ -70,9 +80,11 @@ if (settings.plugins.includes(path)) {
   process.stdout.write('added\n');
 }
 EOF
-  )
+  ); then
+    error "Failed to parse ${SETTINGS_FILE}. Please fix invalid JSON and rerun the installer."
+  fi
 else
-  PATCH_RESULT=$(python3 - "${SETTINGS_FILE}" "${PLUGIN_PATH}" <<'EOF'
+  if ! PATCH_RESULT=$(python3 - "${SETTINGS_FILE}" "${PLUGIN_PATH}" <<'EOF'
 import sys, json
 
 file = sys.argv[1]
@@ -82,7 +94,8 @@ with open(file) as f:
     try:
         settings = json.load(f)
     except json.JSONDecodeError:
-        settings = {}
+        print('Invalid JSON in settings file', file=sys.stderr)
+        sys.exit(2)
 
 if not isinstance(settings.get('plugins'), list):
     settings['plugins'] = []
@@ -96,7 +109,9 @@ else:
         f.write('\n')
     print('added')
 EOF
-  )
+  ); then
+    error "Failed to parse ${SETTINGS_FILE}. Please fix invalid JSON and rerun the installer."
+  fi
 fi
 
 if [ "${PATCH_RESULT}" = "already_present" ]; then
