@@ -8,7 +8,17 @@ Configure RevenueCat projects, products, entitlements, and offerings directly fr
 
 - Claude Code version 1.0.33 or later (run `claude --version` to check)
 
-### Method 1: Using `--plugin-dir` Flag (Quick Start)
+### Method 1: One-Line Install Script (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/RevenueCat/rc-claude-code-plugin/main/install.sh | bash
+```
+
+This script clones the plugin to `~/.claude/plugins/rc-claude-code-plugin` and automatically adds it to your `~/.claude/settings.json`. Restart Claude Code when it completes.
+
+> **Update an existing installation:** Run the same command again — it will `git pull` the latest changes and ensure your settings are correct.
+
+### Method 2: Using `--plugin-dir` Flag (Per-Session)
 
 1. Clone this repository:
 
@@ -28,7 +38,7 @@ Configure RevenueCat projects, products, entitlements, and offerings directly fr
    claude --plugin-dir /path/to/rc-claude-code-plugin --plugin-dir /path/to/other-plugin
    ```
 
-### Method 2: Permanent Installation via Settings (Recommended)
+### Method 3: Permanent Installation via Settings (Manual)
 
 1. Clone this repository:
 
@@ -71,7 +81,7 @@ Configure RevenueCat projects, products, entitlements, and offerings directly fr
    }
    ```
 
-3. Restart Claude Code or reload the plugin:
+3. Restart Claude Code:
 
    ```bash
    claude
@@ -91,9 +101,9 @@ You can also use natural language to trigger agents:
 - "Set up RevenueCat for my app"
 - "Debug my RevenueCat configuration"
 
-### Future: Installing from Claude Plugin Marketplace
+### Claude Plugin Marketplace
 
-This plugin will soon be available via the official Claude Code plugin marketplace for easier installation. Stay tuned!
+This plugin will soon be available via the official Claude Code plugin marketplace for one-click installation. Stay tuned!
 
 ## Authentication
 
