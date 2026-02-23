@@ -64,10 +64,12 @@ Ask the user how to proceed before creating new resources:
 
 1. **Preferred (safer): Create a duplicated offering**
    - Explain this is recommended because design-system paywall generation cannot update an existing paywall on an offering that already has one.
-   - Generate a timestamp suffix once for this run: `YYYYMMDD_HHmmss`.
+   - Generate a timestamp once for this run, and represent it in two ways:
+     - Compact, identifier-safe format for keys: `YYYYMMDD_HHmmss`
+     - Human-readable format for display text: `YYYY-MM-DD HH:mm:ss`
    - Call `mcp_RC_create_offering` with:
-     - `lookup_key`: `{original_lookup_key}_styled_{YYYYMMDD_HHmmss}` by default, or `{user_lookup_key}_{YYYYMMDD_HHmmss}` when user provides one
-     - `display_name`: `{original_display_name} (Styled {YYYY-MM-DD HH:mm:ss})` by default, or `{user_display_name} ({YYYY-MM-DD HH:mm:ss})` when user provides one
+     - `lookup_key`: `{original_lookup_key}_styled_{YYYYMMDD_HHmmss}` by default, or `{user_lookup_key}_{YYYYMMDD_HHmmss}` when user provides one (using the compact timestamp format)
+     - `display_name`: `{original_display_name} (Styled {YYYY-MM-DD HH:mm:ss})` by default, or `{user_display_name} ({YYYY-MM-DD HH:mm:ss})` when user provides one (using the human-readable timestamp format)
      - `metadata`: copy from original offering if available
 
 2. **Duplicate packages with product associations**
